@@ -27,6 +27,7 @@ import { DataService } from '../../services/data.service';
           <li class="list-group-item">{{ user.email }}</li>
           <li class="list-group-item">{{ user.phone }}</li>
         </ul>
+        <button (click)="deleteClick(user.id)" class="btn btn-danger btn-sm">Delete</button>
       </div>
     </div>
   `
@@ -34,14 +35,15 @@ import { DataService } from '../../services/data.service';
 
 export class SandboxComponent implements OnInit {
   users: User[];
-  user: User[];
+  user: User;
 
   constructor(public dataService: DataService) {
     this.dataService.getUsers().subscribe(users => {
       this.users = users;
     });
     this.user = {
-      name: '',
+      id:     0,
+      name:  '',
       email: '',
       phone: ''
     };
@@ -56,18 +58,28 @@ export class SandboxComponent implements OnInit {
         this.users.unshift(user);
       } else {
         console.log('user exists');
-      };
+      }
     });
   }
 
   userExists(id: number): boolean {
-    let exists = false;
-    for (let user of this.users) {
-      if (user['id'] == id) {
-        exists = true;
+    return this.getUserByID(id) ? true : false;
+  }
+
+  getUserByID(id: number): User {
+    for (const user of this.users) {
+      if (user.id === id) {
+        return user;
       }
     }
-    return exists;
+    return null;
+  }
+
+  deleteClick(id: number) {
+    this.dataService.deleteUser(id).subscribe( res => {
+      console.log(res);
+    });
+    this.users = this.users.filter(u => u.id !== id);
   }
 }
 

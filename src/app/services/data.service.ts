@@ -16,4 +16,9 @@ export class DataService {
     return this.http.post(this.userServiceUrl, user).
       map(res => res.json());
   }
+
+  deleteUser(userid: number) {
+    return this.http.delete(this.userServiceUrl + '/' + userid)
+      .map(res => res.json());
+  }
 }
