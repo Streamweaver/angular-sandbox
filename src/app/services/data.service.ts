@@ -11,4 +11,9 @@ export class DataService {
     return this.http.get(this.userServiceUrl)
       .map(res => res.json());
   }
+
+  addUser(user) {
+    return this.http.post(this.userServiceUrl, user).
+      map(res => res.json());
+  }
 }
