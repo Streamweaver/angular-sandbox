@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { DataService } from '../../services/data.service';
 
 @Component({
   selector: 'app-sandbox',
@@ -10,7 +11,7 @@ import { Component, OnInit } from '@angular/core';
 })
 export class SandboxComponent implements OnInit {
 
-  constructor() { }
+  constructor(public dataService: DataService) { }
 
   ngOnInit() {
   }
