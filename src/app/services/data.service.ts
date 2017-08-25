@@ -21,4 +21,8 @@ export class DataService {
     return this.http.delete(this.userServiceUrl + '/' + userid)
       .map(res => res.json());
   }
+
+  updateUser(user) {
+    return this.http.put(this.userServiceUrl + '/' + user.id, user).map(res => res.json());
+  }
 }

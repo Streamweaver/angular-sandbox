@@ -7,7 +7,7 @@ import { DataService } from '../../services/data.service';
   styleUrls: ['./sandbox.component.css'],
   template: `
     <h1>Hello Sandbox!</h1>
-    <form (submit)="onSubmit()">
+    <form (submit)="onSubmit(isEdit)">
       <div class="form-group">
         <input type="text" class="form-control" [(ngModel)]="user.name" name="name">
       </div>
@@ -17,7 +17,8 @@ import { DataService } from '../../services/data.service';
       <div class="form-group">
         <input type="text" class="form-control" [(ngModel)]="user.phone" name="phone">
       </div>
-      <input type="submit" class="btn btn-primary" value="Add">
+      <input type="submit" class="btn btn-primary" value="{{ isEdit ? 'Update' : 'Add' }}">
+      <button (click)="clearUser()" class="btn btn-toolbar">Clear</button>
     </form>
     <hr>
     <div *ngFor="let user of users" class="container">
@@ -27,6 +28,7 @@ import { DataService } from '../../services/data.service';
           <li class="list-group-item">{{ user.email }}</li>
           <li class="list-group-item">{{ user.phone }}</li>
         </ul>
+        <button (click)="editClick(user)" class="btn btn-primary btn-sm">Edit</button>
         <button (click)="deleteClick(user.id)" class="btn btn-danger btn-sm">Delete</button>
       </div>
     </div>
@@ -36,6 +38,7 @@ import { DataService } from '../../services/data.service';
 export class SandboxComponent implements OnInit {
   users: User[];
   user: User;
+  isEdit: boolean;
 
   constructor(public dataService: DataService) {
     this.dataService.getUsers().subscribe(users => {
@@ -51,7 +54,15 @@ export class SandboxComponent implements OnInit {
 
   ngOnInit() {}
 
-  onSubmit() {
+  onSubmit(isEdit: boolean) {
+    if (isEdit) {
+      this.addUser();
+    } else {
+      this.updateUser();
+    }
+  }
+
+  private addUser() {
     this.dataService.addUser(this.user).subscribe(user => {
       console.log(user);
       if (!this.userExists(user['id'])) {
@@ -59,6 +70,13 @@ export class SandboxComponent implements OnInit {
       } else {
         console.log('user exists');
       }
+    });
+  }
+
+  private updateUser() {
+    this.dataService.updateUser(this.user).subscribe( user => {
+      this.users = this.users.filter(u => u.id !== user.id);
+      this.users.unshift(user);
     });
   }
 
@@ -80,6 +98,21 @@ export class SandboxComponent implements OnInit {
       console.log(res);
     });
     this.users = this.users.filter(u => u.id !== id);
+  }
+
+  editClick(user: User) {
+    this.isEdit = true;
+    this.user = user;
+  }
+
+  clearUser() {
+    this.user = {
+      id:     0,
+      name:  '',
+      email: '',
+      phone: ''
+    };
+    this.isEdit = false;
   }
 }
 
